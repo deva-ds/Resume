@@ -22,38 +22,93 @@ function AvatarEyes() {
   const [iris, setIris] = useState(EYES.map(() => ({ x: 0, y: 0 })));
 
   useEffect(() => {
+    const clamp = (v) => Math.max(-1, Math.min(1, v));
+    const vw = () => window.innerWidth;
+    const vh = () => window.innerHeight;
+    // Everything aims at one target point (viewport px). Sources, highest priority first:
+    // pointer/touch → device tilt → idle wander.
+    const target = { x: vw() / 2, y: vh() * 0.4 };
+    const cur = { ...target };
+    let lastPointer = -Infinity;
+    let lastTilt = -Infinity;
+    let nextWander = 0;
+    let tiltBase = null;
     let raf = 0;
-    const onMove = (e) => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
-        const next = EYES.map((_, i) => {
+
+    const aim = (x, y) => {
+      target.x = x;
+      target.y = y;
+      lastPointer = performance.now();
+    };
+    const onPointer = (e) => aim(e.clientX, e.clientY);
+    const onTouch = (e) => {
+      const t = e.touches[0];
+      if (t) aim(t.clientX, t.clientY);
+    };
+    const onTilt = (e) => {
+      if (e.beta == null || e.gamma == null) return;
+      if (!tiltBase) tiltBase = { beta: e.beta, gamma: e.gamma };
+      if (performance.now() - lastPointer < 2500) return;
+      target.x = vw() * (0.5 + clamp((e.gamma - tiltBase.gamma) / 25) * 0.5);
+      target.y = vh() * (0.4 + clamp((e.beta - tiltBase.beta) / 25) * 0.5);
+      lastTilt = performance.now();
+    };
+    // iOS only delivers orientation after a permission prompt triggered by a tap.
+    const askTilt = () => {
+      const DOE = window.DeviceOrientationEvent;
+      if (DOE && typeof DOE.requestPermission === "function") DOE.requestPermission().catch(() => {});
+    };
+
+    const tick = (now) => {
+      if (now - lastPointer > 2500 && now - lastTilt > 1500 && now > nextWander) {
+        target.x = vw() * (0.15 + Math.random() * 0.7);
+        target.y = vh() * (0.15 + Math.random() * 0.6);
+        nextWander = now + 1200 + Math.random() * 1800;
+      }
+      const k = now - lastPointer < 150 ? 0.35 : 0.08;
+      const dx = target.x - cur.x;
+      const dy = target.y - cur.y;
+      if (Math.abs(dx) + Math.abs(dy) < 0.5 || document.hidden) {
+        raf = requestAnimationFrame(tick);
+        return;
+      }
+      cur.x += dx * k;
+      cur.y += dy * k;
+
+      setIris(
+        EYES.map((eye, i) => {
           const el = eyeRefs.current[i];
           if (!el) return { x: 0, y: 0 };
           const r = el.getBoundingClientRect();
-          const cx = r.left + r.width / 2;
-          const cy = r.top + r.height / 2;
-          // normalized direction to cursor from THIS eye, full-screen range
-          const nx = Math.max(-1, Math.min(1, (e.clientX - cx) / (vw * 0.45)));
-          const ny = Math.max(-1, Math.min(1, (e.clientY - cy) / (vh * 0.45)));
+          const nx = clamp((cur.x - (r.left + r.width / 2)) / (vw() * 0.45));
+          const ny = clamp((cur.y - (r.top + r.height / 2)) / (vh() * 0.45));
           // iris may travel until it touches the eye edge
-          const irisPx = (IRIS_W / 100) * (r.width / (EYES[i].w / 100));
+          const irisPx = (IRIS_W / 100) * (r.width / (eye.w / 100));
           const maxX = Math.max(0, (r.width - irisPx) / 2) * 0.95;
           const maxY = Math.max(0, (r.height - irisPx * 0.55) / 2) * 0.9;
           return { x: nx * maxX, y: ny * maxY };
-        });
-        setIris(next);
-        setLook({
-          x: Math.max(-1, Math.min(1, (e.clientX / vw) * 2 - 1)),
-          y: Math.max(-1, Math.min(1, (e.clientY / vh) * 2 - 1)),
-        });
-      });
+        })
+      );
+      setLook({ x: clamp((cur.x / vw()) * 2 - 1), y: clamp((cur.y / vh()) * 2 - 1) });
+      raf = requestAnimationFrame(tick);
     };
-    window.addEventListener("mousemove", onMove, { passive: true });
+    raf = requestAnimationFrame(tick);
+
+    const opts = { passive: true };
+    window.addEventListener("pointermove", onPointer, opts);
+    window.addEventListener("pointerdown", onPointer, opts);
+    window.addEventListener("touchstart", onTouch, opts);
+    window.addEventListener("touchmove", onTouch, opts);
+    window.addEventListener("deviceorientation", onTilt, opts);
+    window.addEventListener("touchend", askTilt, { once: true });
     return () => {
-      window.removeEventListener("mousemove", onMove);
       cancelAnimationFrame(raf);
+      window.removeEventListener("pointermove", onPointer);
+      window.removeEventListener("pointerdown", onPointer);
+      window.removeEventListener("touchstart", onTouch);
+      window.removeEventListener("touchmove", onTouch);
+      window.removeEventListener("deviceorientation", onTilt);
+      window.removeEventListener("touchend", askTilt);
     };
   }, []);
 
