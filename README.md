@@ -31,6 +31,21 @@ That's it. You never need to touch the code to update content.
 | About paragraph, certifications, awards, languages | `about` |
 | Email, LinkedIn, phone, location | `contact` |
 | Name in the footer | `footerName` |
+| Resume-only text: full name, title line, career objective, summary bullets, interests | `resume` |
+
+### The downloadable resume PDF is generated automatically
+
+The "Resume" buttons download a PDF that is **built from `content.json` on every deploy**, so it always matches the website. You don't upload a PDF.
+
+The PDF uses:
+
+- `resume.fullName`, `resume.title`, and `contact` for the header.
+- `resume.objective` and `resume.summary` for Career Objective and Professional Summary.
+- `skills` for Core Skills.
+- `experience` for Professional Experience (the same roles, periods, and bullets as the site; `Headline — detail` bullets print with a bold headline).
+- `about.cards` (certifications, awards, languages) plus `resume.extraSections` (for example Interests) at the end.
+
+To add another block that appears only in the PDF, add `{ "title": "...", "lines": ["..."] }` to `resume.extraSections`. The PDF layout itself lives in `scripts/build-resume.mjs`.
 
 ### Adding a new job
 
@@ -69,16 +84,9 @@ Field notes:
 
 **JSON tips:** keep the quotes and commas exactly as in the examples. Every item in a list is separated by a comma, but the last item has no trailing comma. If the site stops updating after an edit, open the **Actions** tab — a red X usually means a missing comma or quote in `content.json`.
 
-### Replacing the resume PDF or avatar
+### Replacing the avatar
 
-These files live in [`public/`](public):
-
-| File | What it is |
-| --- | --- |
-| `public/Pullaiah_Devalla_Resume.pdf` | Downloaded by the "Resume" buttons |
-| `public/pullaiah-avatar.png` | The illustrated avatar (transparent background) |
-
-To replace one, upload a new file with the **same name** into `public/`. If you use a different name, update `site.resumePdf` or `site.avatar` in `content.json`.
+The avatar is `public/pullaiah-avatar.png` (transparent background). To replace it, upload a new file with the **same name** into `public/`, or use a different name and update `site.avatar` in `content.json`. (`site.resumePdf` only sets the file name of the generated PDF.)
 
 If you replace the avatar with a different image, the eye positions will no longer line up. They are set in the `EYES` list near the top of `src/App.jsx` (percent positions of each eye on the image), so a new avatar needs those numbers adjusted.
 
@@ -88,7 +96,7 @@ If you replace the avatar with a different image, the eye positions will no long
 
 - Workflow file: [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml).
 - It runs on every push to `main` (and can be run manually from the **Actions** tab via "Run workflow").
-- It installs dependencies, builds the site, and publishes the `dist/` folder to GitHub Pages.
+- It installs dependencies, builds the site, generates the resume PDF from `content.json` (the `postbuild` step, using headless Chrome via Puppeteer), and publishes the `dist/` folder to GitHub Pages.
 - One-time setting (already done): **Settings → Pages → Build and deployment → Source = GitHub Actions**.
 
 ## Running locally (optional)
@@ -102,12 +110,15 @@ npm run dev
 
 Then open http://localhost:5173. Edits to `src/content.json` show up instantly.
 
+To preview the resume PDF locally, run `npm run resume`. It writes `public/Pullaiah_Devalla_Resume.pdf`, which is git-ignored because the deploy regenerates it.
+
 ## Project layout
 
 ```
 src/content.json      <- all website text (edit this)
 src/App.jsx           <- page layout, avatar eye-tracking, interactions
 src/App.css           <- styling and animations
-public/               <- avatar image and resume PDF
+scripts/build-resume.mjs <- builds the resume PDF from content.json
+public/               <- avatar image and icons
 .github/workflows/    <- automatic build + deploy to GitHub Pages
 ```

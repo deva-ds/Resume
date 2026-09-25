@@ -25,3 +25,6 @@ dist-ssr
 
 # Private originals (not published)
 source-assets/
+
+# generated from src/content.json
+public/Pullaiah_Devalla_Resume.pdf

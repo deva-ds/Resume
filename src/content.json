@@ -138,5 +138,21 @@
     "location": "Hyderabad, India"
   },
 
+  "resume": {
+    "fullName": "Pullaiah Devalla",
+    "title": "Senior Data Analyst · Power BI · Microsoft Fabric · Azure",
+    "objective": "Business Intelligence, Cloud Analytics, and Data Analytics professional with 9+ years of experience delivering end-to-end data solutions on Power BI, Azure, and Microsoft Fabric. Passionate about driving business value through scalable, automated, and AI-driven analytics platforms.",
+    "summary": [
+      "9+ years as Data Analyst / Engineer across finance, engineering, fitness, and consumer domains",
+      "Currently leading root-cause investigations for ABC Fitness Insights Reporting — Power BI, SSRS, Synapse, Azure SQL, and ADF",
+      "Deep expertise in Power BI, Azure (ADF, Databricks, Synapse), SQL, Python (incl. NLP), and Microsoft Fabric",
+      "Proven track record of delivering 40+ dashboards and analytical models for 150+ global users",
+      "Strong stakeholder engagement, Agile leadership, and cross-functional collaboration"
+    ],
+    "extraSections": [
+      { "title": "Interests", "lines": ["Data Science, Power BI Community, Volunteering"] }
+    ]
+  },
+
   "footerName": "Pullaiah Devalla"
 }
