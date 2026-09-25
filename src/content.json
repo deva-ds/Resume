@@ -1,0 +1,142 @@
+{
+  "site": {
+    "title": "Pullaiah Devalla — Senior Data Analyst",
+    "resumePdf": "Pullaiah_Devalla_Resume.pdf",
+    "avatar": "pullaiah-avatar.png"
+  },
+
+  "hero": {
+    "greeting": "HI, I'M",
+    "name": "Pullaiah",
+    "headline": "Crafting modern BI and cloud analytics with clean models, creative motion in reporting, and scalable data architecture — currently on Insights at ABC Fitness Solutions.",
+    "primaryButton": "Resume ↗",
+    "secondaryButton": "Let's talk"
+  },
+
+  "stats": [
+    { "value": 9, "suffix": "+", "label": "Years in analytics" },
+    { "value": 40, "suffix": "+", "label": "Dashboards shipped" },
+    { "value": 150, "suffix": "+", "label": "Global users served" },
+    { "value": 110, "suffix": "GB", "label": "Largest semantic model" }
+  ],
+
+  "experienceIntro": "Nine years across Infosys → LTIMindtree → ABC Fitness Insights. Click a stop on the timeline or use ← → keys.",
+
+  "experience": [
+    {
+      "key": "abc",
+      "short": "ABC Fitness",
+      "role": "Senior Data Analyst — Insights & Reporting",
+      "org": "ABC Fitness Solutions (via LTIMindtree)",
+      "period": "Current engagement",
+      "years": "2024 — Now",
+      "badge": "Client",
+      "metrics": [
+        { "value": 40, "suffix": "+", "label": "Insights reports supported" },
+        { "value": 4, "suffix": "", "label": "Data layers traced end-to-end" },
+        { "value": 100, "suffix": "%", "label": "Source-first diagnostics" }
+      ],
+      "tags": ["Power BI", "SSRS / RDL", "Synapse", "Azure SQL", "ADF", "DAX"],
+      "points": [
+        "Lead root-cause investigations across Insights Reporting — Power BI semantic models, SSRS paginated reports, Synapse / Azure SQL, and ADF pipelines.",
+        "Trace data gaps source-first — staging → ETL stored procedures → reporting layer, validated across many locations and edge cases before any fix is proposed.",
+        "Build and harden reporting logic — DAX measures, model relationships, and paginated-report dataset queries for fitness operations analytics (membership, payments, revenue, check-ins).",
+        "Partner with Data Engineering on production fixes — stored procedure and view changes, schema impact analysis, pipeline mapping checks, and proof queries.",
+        "Communicate findings to product and support — concise summaries plus technical write-ups, and mentor teammates on investigation practices."
+      ]
+    },
+    {
+      "key": "ltim",
+      "short": "LTIMindtree",
+      "role": "Senior Data Analyst / Fabric Engineer | Specialist — Data Engineering",
+      "org": "LTIMindtree, Hyderabad",
+      "period": "Dec 2023 — Present",
+      "years": "2023 — Now",
+      "badge": "Employer",
+      "metrics": [
+        { "value": 110, "suffix": "GB", "label": "Largest semantic model" },
+        { "value": 500, "prefix": "F", "suffix": "", "label": "Fortune 500 clients" },
+        { "value": 3, "suffix": "", "label": "Business units served" }
+      ],
+      "tags": ["Microsoft Fabric", "Tabular Editor", "C# scripts", "NLP", "RLS", "ADF"],
+      "points": [
+        "Lead Power BI and Microsoft Fabric delivery for Fortune 500 clients across Product, Finance, and Executive stakeholders.",
+        "Architect solutions on large semantic models (up to ~110GB) with performance tuning, incremental refresh, and gateway stability.",
+        "Automate model ops with Tabular Editor and C# scripts; design star schemas and DAX calculation groups.",
+        "Build and manage Azure Data Factory pipelines feeding enterprise semantic models.",
+        "Implement NLP/text analytics in live dashboards; enforce RLS, governed workspaces, and analyst training playbooks."
+      ]
+    },
+    {
+      "key": "infy",
+      "short": "Infosys",
+      "role": "Power BI Developer / Data Analyst / Data Engineer | Engineering Lead",
+      "org": "Infosys, Hyderabad",
+      "period": "July 2016 — Dec 2023",
+      "years": "2016 — 2023",
+      "badge": "Previous",
+      "metrics": [
+        { "value": 40, "suffix": "+", "label": "Dashboards delivered" },
+        { "value": 150, "suffix": "+", "label": "Global users" },
+        { "value": 60, "suffix": "%", "label": "Manual effort reduced" }
+      ],
+      "tags": ["Power BI", "Tableau", "SQL / MySQL", "DAX Studio", "ALM Toolkit", "Azure"],
+      "points": [
+        "Designed and delivered 40+ dashboards and analytical models across business units for 150+ global users.",
+        "Engineered Incremental Refresh for semantic models up to ~40GB; cut stakeholder manual effort by ~60%.",
+        "Migrated Tableau prototypes to production Power BI; authored knowledge bases and trained 20+ analysts.",
+        "Built ETL/dataflows with SQL/MySQL and Azure integrations; used DAX Studio, Tabular Editor, and ALM Toolkit for versioning and tuning."
+      ]
+    }
+  ],
+
+  "skillsIntro": "Core stack from the resume, plus day-to-day Insights tooling. Hover to explore.",
+
+  "skills": [
+    {
+      "title": "BI & Visualization",
+      "items": ["Power BI (DAX, Power Query)", "Microsoft Fabric", "SSRS / Paginated RDL", "Tableau", "Dataflows"]
+    },
+    {
+      "title": "Azure & Platforms",
+      "items": ["Azure Data Factory", "Azure Synapse / SQL", "Databricks", "Fabric Pipelines", "Power BI Gateway"]
+    },
+    {
+      "title": "Data Modeling & Eng",
+      "items": ["SQL / MySQL", "Star Schema / Dimensional", "Semantic Models", "Incremental Refresh", "ALM Toolkit / Tabular Editor"]
+    },
+    {
+      "title": "Investigation & Quality",
+      "items": ["Root-cause analysis", "Source-first diagnostics", "Stored procedure / view lineage", "Report vs database fix triage", "Python (Pandas / NLP)"]
+    }
+  ],
+
+  "about": {
+    "summary": "Business Intelligence, Cloud Analytics, and Data Analytics professional with 9+ years delivering end-to-end data solutions on Power BI, Azure, and Microsoft Fabric. Passionate about driving business value through scalable, automated, and AI-driven analytics platforms.",
+    "cards": [
+      {
+        "title": "Certifications",
+        "lines": ["PL-300 · Microsoft Power BI Data Analyst", "Microsoft Python Certification"]
+      },
+      {
+        "title": "Awards",
+        "lines": ["Infosys Insta Award (2×) — analytics innovation & mentoring", "Client recognition for precision dashboard delivery"]
+      },
+      {
+        "title": "Languages",
+        "lines": ["English · Hindi · Telugu"]
+      }
+    ]
+  },
+
+  "contact": {
+    "intro": "Open to conversations about BI platforms, Fabric, and high-stakes reporting reliability.",
+    "email": "pullaiah120492@gmail.com",
+    "linkedin": "https://linkedin.com/in/pullaiah-devalla",
+    "linkedinLabel": "linkedin.com/in/pullaiah-devalla",
+    "phone": "+91 90594 69703",
+    "location": "Hyderabad, India"
+  },
+
+  "footerName": "Pullaiah Devalla"
+}
