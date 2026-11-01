@@ -25,9 +25,18 @@ jobs:
           node-version: 22
           cache: npm
 
+      # Puppeteer downloads headless Chrome on install; keep it between runs.
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/puppeteer
+          key: puppeteer-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
       - run: npm ci
 
-      - name: Build
+      - name: Lint
+        run: npm run lint
+
+      - name: Build site, resume PDF and social preview
         run: npm run build -- --base=/${{ github.event.repository.name }}/
 
       - uses: actions/upload-pages-artifact@v3

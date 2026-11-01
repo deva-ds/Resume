@@ -1,26 +1,32 @@
 {
   "site": {
     "title": "Pullaiah Devalla — Senior Data Analyst",
+    "description": "Senior Data Analyst with 10+ years in Business Intelligence and cloud analytics — Power BI, Microsoft Fabric, Azure, SSRS — currently on the Insights team at ABC Fitness Solutions.",
+    "url": "https://deva-ds.github.io/Resume/",
     "resumePdf": "Pullaiah_Devalla_Resume.pdf",
-    "avatar": "pullaiah-avatar.png"
+    "avatar": "pullaiah-avatar.png",
+    "avatarWebp": "pullaiah-avatar.webp",
+    "avatarWidth": 1000,
+    "avatarHeight": 1326
   },
 
   "hero": {
     "greeting": "HI, I'M",
     "name": "Pullaiah",
-    "headline": "Crafting modern BI and cloud analytics with clean models, creative motion in reporting, and scalable data architecture — currently on Insights at ABC Fitness Solutions.",
+    "title": "Senior Data Analyst · Power BI · Microsoft Fabric · Azure",
+    "headline": "Ten years of building BI that people trust — clean semantic models, fast reports, and root-cause fixes that hold. Currently on the Insights team at ABC Fitness Solutions.",
     "primaryButton": "Resume ↗",
     "secondaryButton": "Let's talk"
   },
 
   "stats": [
-    { "value": 9, "suffix": "+", "label": "Years in analytics" },
+    { "value": 10, "suffix": "+", "label": "Years in analytics" },
     { "value": 40, "suffix": "+", "label": "Dashboards shipped" },
     { "value": 150, "suffix": "+", "label": "Global users served" },
     { "value": 110, "suffix": "GB", "label": "Largest semantic model" }
   ],
 
-  "experienceIntro": "Nine years across Infosys → LTIMindtree → ABC Fitness Insights. Click a stop on the timeline or use ← → keys.",
+  "experienceIntro": "Ten years across Infosys → LTIMindtree → ABC Fitness Insights. Click a stop on the timeline or use ← → keys.",
 
   "experience": [
     {
@@ -55,16 +61,17 @@
       "badge": "Previous",
       "metrics": [
         { "value": 110, "suffix": "GB", "label": "Largest semantic model" },
-        { "value": 500, "prefix": "F", "suffix": "", "label": "Fortune 500 clients" },
+        { "value": 500, "prefix": "Fortune ", "suffix": "", "label": "Client tier served" },
         { "value": 3, "suffix": "", "label": "Business units served" }
       ],
       "tags": ["Microsoft Fabric", "Tabular Editor", "C# scripts", "NLP", "RLS", "ADF"],
       "points": [
-        "Lead Power BI and Microsoft Fabric delivery for Fortune 500 clients across Product, Finance, and Executive stakeholders.",
-        "Architect solutions on large semantic models (up to ~110GB) with performance tuning, incremental refresh, and gateway stability.",
-        "Automate model ops with Tabular Editor and C# scripts; design star schemas and DAX calculation groups.",
-        "Build and manage Azure Data Factory pipelines feeding enterprise semantic models.",
-        "Implement NLP/text analytics in live dashboards; enforce RLS, governed workspaces, and analyst training playbooks."
+        "Led Power BI and Microsoft Fabric delivery — for Fortune 500 clients across Product, Finance, and Executive stakeholders, including sprint planning, scrum ceremonies, and technical documentation.",
+        "Architected large semantic models — up to ~110GB, with performance tuning, incremental refresh, and gateway stability work that kept scheduled refreshes reliable.",
+        "Automated model operations — Tabular Editor and C# scripts for repeatable changes; designed star schemas and DAX calculation groups to simplify measures and speed up reports.",
+        "Built and managed Azure Data Factory pipelines — the feeds behind enterprise semantic models.",
+        "Delivered NLP and text analytics in live dashboards — sentiment and text-mining visuals, with row-level security, governed workspaces, and training playbooks for global users.",
+        "Mentored junior analysts — training on Power BI, Azure, and NLP techniques."
       ]
     },
     {
@@ -82,10 +89,11 @@
       ],
       "tags": ["Power BI", "Tableau", "SQL / MySQL", "DAX Studio", "ALM Toolkit", "Azure"],
       "points": [
-        "Designed and delivered 40+ dashboards and analytical models across business units for 150+ global users.",
-        "Engineered Incremental Refresh for semantic models up to ~40GB; cut stakeholder manual effort by ~60%.",
-        "Migrated Tableau prototypes to production Power BI; authored knowledge bases and trained 20+ analysts.",
-        "Built ETL/dataflows with SQL/MySQL and Azure integrations; used DAX Studio, Tabular Editor, and ALM Toolkit for versioning and tuning."
+        "Designed and delivered 40+ dashboards — analytical models across multiple business units, serving 150+ global users.",
+        "Engineered Incremental Refresh — for semantic models up to ~40GB, improving refresh stability; automated manual reporting and cut stakeholder effort by ~60%.",
+        "Migrated Tableau prototypes to production Power BI — authored knowledge bases, trained 20+ analysts, and ran end-user workshops that reduced support queries.",
+        "Built ETL and dataflows — SQL / MySQL with Azure integrations, plus data-quality checks (null and outlier validation, reconciliation).",
+        "Versioning and performance tuning — DAX Studio, Tabular Editor, and ALM Toolkit as the standard toolchain."
       ]
     }
   ],
@@ -112,7 +120,7 @@
   ],
 
   "about": {
-    "summary": "Business Intelligence, Cloud Analytics, and Data Analytics professional with 9+ years delivering end-to-end data solutions on Power BI, Azure, and Microsoft Fabric. Passionate about driving business value through scalable, automated, and AI-driven analytics platforms.",
+    "summary": "Business Intelligence, Cloud Analytics, and Data Analytics professional with 10+ years delivering end-to-end data solutions on Power BI, Azure, and Microsoft Fabric. Passionate about driving business value through scalable, automated, and AI-driven analytics platforms.",
     "cards": [
       {
         "title": "Certifications",
@@ -141,9 +149,9 @@
   "resume": {
     "fullName": "Pullaiah Devalla",
     "title": "Senior Data Analyst · Power BI · Microsoft Fabric · Azure",
-    "objective": "Business Intelligence, Cloud Analytics, and Data Analytics professional with 9+ years of experience delivering end-to-end data solutions on Power BI, Azure, and Microsoft Fabric. Passionate about driving business value through scalable, automated, and AI-driven analytics platforms.",
+    "objective": "Business Intelligence, Cloud Analytics, and Data Analytics professional with 10+ years of experience delivering end-to-end data solutions on Power BI, Azure, and Microsoft Fabric. Passionate about driving business value through scalable, automated, and AI-driven analytics platforms.",
     "summary": [
-      "9+ years as Data Analyst / Engineer across finance, engineering, fitness, and consumer domains",
+      "10+ years as Data Analyst / Engineer across finance, engineering, fitness, and consumer domains",
       "Currently leading root-cause investigations for ABC Fitness Insights Reporting — Power BI, SSRS, Synapse, Azure SQL, and ADF",
       "Deep expertise in Power BI, Azure (ADF, Databricks, Synapse), SQL, Python (incl. NLP), and Microsoft Fabric",
       "Proven track record of delivering 40+ dashboards and analytical models for 150+ global users",

@@ -21,9 +21,9 @@ That's it. You never need to touch the code to update content.
 
 | What you want to change | Where in `src/content.json` |
 | --- | --- |
-| Name, "HI, I'M", headline under the name, button labels | `hero` |
-| Browser tab title | `site.title` |
-| The 4 animated numbers under the hero | `stats` |
+| Name, "HI, I'M", job-title line, headline under the name, button labels | `hero` |
+| Browser tab title, one-line description (also used on the social-preview image) | `site.title`, `site.description` |
+| The 4 animated numbers under the hero (the first 3 also appear on the social-preview image) | `stats` |
 | Sentence under the "Experience" heading | `experienceIntro` |
 | Jobs / roles (timeline + detail panel) | `experience` |
 | Sentence under the "Skills" heading | `skillsIntro` |
@@ -33,19 +33,23 @@ That's it. You never need to touch the code to update content.
 | Name in the footer | `footerName` |
 | Resume-only text: full name, title line, career objective, summary bullets, interests | `resume` |
 
+Two things are **not** read from `content.json` and must be edited in [`index.html`](index.html) if they change: the social-preview text (`og:title`, `og:description`) and the structured-data block (`application/ld+json`) that search engines read. Both currently say "Senior Data Analyst" and "10+ years".
+
 ### The downloadable resume PDF is generated automatically
 
 The "Resume" buttons download a PDF that is **built from `content.json` on every deploy**, so it always matches the website. You don't upload a PDF.
 
 The PDF uses:
 
-- `resume.fullName`, `resume.title`, and `contact` for the header.
+- `resume.fullName`, `resume.title`, and `contact` for the header (email, phone and LinkedIn are clickable in the PDF).
 - `resume.objective` and `resume.summary` for Career Objective and Professional Summary.
 - `skills` for Core Skills.
 - `experience` for Professional Experience (the same roles, periods, and bullets as the site; `Headline — detail` bullets print with a bold headline).
 - `about.cards` (certifications, awards, languages) plus `resume.extraSections` (for example Interests) at the end.
 
 To add another block that appears only in the PDF, add `{ "title": "...", "lines": ["..."] }` to `resume.extraSections`. The PDF layout itself lives in `scripts/build-resume.mjs`.
+
+The same script also generates `og.png` (the 1200×630 preview card shown when the link is shared on LinkedIn, Teams, WhatsApp, etc.) and `apple-touch-icon.png` (the home-screen icon on phones). They are rebuilt on every deploy from `hero`, `site.description`, `stats` and the avatar.
 
 ### Adding a new job
 
@@ -78,15 +82,22 @@ Field notes:
 - `key`: any unique short word, no spaces.
 - `short`: company name shown on the timeline.
 - `badge`: `Client`, `Employer`, or `Previous` (controls the badge color).
-- `metrics`: exactly 3 work best. `value` must be a number (it animates); `prefix`/`suffix` are optional text like `"+"`, `"%"`, `"GB"`.
-- `points`: write `Headline — detail` (with a spaced em dash ` — `) to make the bullet expandable. Without the dash it shows as a plain line.
+- `metrics`: exactly 3 work best. `value` must be a number (it animates); `prefix`/`suffix` are optional text like `"+"`, `"%"`, `"GB"`, or `"Fortune "` (prefix) to show "Fortune 500".
+- `points`: write `Headline — detail` (with a spaced em dash ` — `) to make the bullet expandable. Without the dash it shows as a plain line. The headline is printed in bold in the PDF.
 - When the previous job ends, update its `period`, `years`, and `badge` (for example to `Previous`).
+- Remember to bump the years in `stats`, `experienceIntro`, `about.summary`, `resume.objective` and `resume.summary` each year.
 
 **JSON tips:** keep the quotes and commas exactly as in the examples. Every item in a list is separated by a comma, but the last item has no trailing comma. If the site stops updating after an edit, open the **Actions** tab — a red X usually means a missing comma or quote in `content.json`.
 
 ### Replacing the avatar
 
-The avatar is `public/pullaiah-avatar.png` (transparent background). To replace it, upload a new file with the **same name** into `public/`, or use a different name and update `site.avatar` in `content.json`. (`site.resumePdf` only sets the file name of the generated PDF.)
+The avatar is `public/pullaiah-avatar.png` (transparent background). The site actually serves a much smaller WebP copy, `public/pullaiah-avatar.webp`, and only falls back to the PNG on very old browsers. After replacing the PNG, regenerate the WebP once and commit both files:
+
+```bash
+npm run avatar
+```
+
+(It prints the image size; if it differs from `site.avatarWidth` / `site.avatarHeight` in `content.json`, update those two numbers.) To use different file names, change `site.avatar` and `site.avatarWebp`. `site.resumePdf` only sets the file name of the generated PDF.
 
 If you replace the avatar with a different image, the eye positions will no longer line up. They are set in the `EYES` list near the top of `src/App.jsx` (percent positions of each eye on the image), so a new avatar needs those numbers adjusted.
 
@@ -96,7 +107,7 @@ If you replace the avatar with a different image, the eye positions will no long
 
 - Workflow file: [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml).
 - It runs on every push to `main` (and can be run manually from the **Actions** tab via "Run workflow").
-- It installs dependencies, builds the site, generates the resume PDF from `content.json` (the `postbuild` step, using headless Chrome via Puppeteer), and publishes the `dist/` folder to GitHub Pages.
+- It installs dependencies, lints, builds the site, generates the resume PDF, social-preview image and touch icon from `content.json` (the `postbuild` step, using headless Chrome via Puppeteer), and publishes the `dist/` folder to GitHub Pages. The Chrome download is cached between runs.
 - One-time setting (already done): **Settings → Pages → Build and deployment → Source = GitHub Actions**.
 
 ## Running locally (optional)
@@ -110,15 +121,18 @@ npm run dev
 
 Then open http://localhost:5173. Edits to `src/content.json` show up instantly.
 
-To preview the resume PDF locally, run `npm run resume`. It writes `public/Pullaiah_Devalla_Resume.pdf`, which is git-ignored because the deploy regenerates it.
+To preview the resume PDF (and `og.png` / `apple-touch-icon.png`) locally, run `npm run resume`. It writes them into `public/`; they are git-ignored because the deploy regenerates them.
 
 ## Project layout
 
 ```
-src/content.json      <- all website text (edit this)
-src/App.jsx           <- page layout, avatar eye-tracking, interactions
-src/App.css           <- styling and animations
-scripts/build-resume.mjs <- builds the resume PDF from content.json
-public/               <- avatar image and icons
-.github/workflows/    <- automatic build + deploy to GitHub Pages
+src/content.json           <- all website text (edit this)
+src/App.jsx                <- page layout, avatar eye-tracking, interactions
+src/App.css                <- theme, styling and animations
+src/index.css              <- base CSS resets
+index.html                 <- page <head>: social-preview tags, structured data, fonts
+scripts/build-resume.mjs   <- builds the resume PDF, og.png and apple-touch-icon.png from content.json
+scripts/build-avatar.mjs   <- converts the avatar PNG to WebP (npm run avatar)
+public/                    <- avatar images and favicon
+.github/workflows/         <- automatic build + deploy to GitHub Pages
 ```

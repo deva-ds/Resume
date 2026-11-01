@@ -28,3 +28,7 @@ source-assets/
 
 # generated from src/content.json
 public/Pullaiah_Devalla_Resume.pdf
+
+# generated at build time from src/content.json
+public/og.png
+public/apple-touch-icon.png

@@ -5,6 +5,9 @@ import content from "./content.json";
 const { site, hero, stats, experienceIntro, experience, skillsIntro, skills, about, contact, footerName } =
   content;
 const asset = (file) => `${import.meta.env.BASE_URL}${file}`;
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
 
 /**
  * Eye openings on the illustrated avatar, as % of the image box.
@@ -22,6 +25,7 @@ function AvatarEyes() {
   const [iris, setIris] = useState(EYES.map(() => ({ x: 0, y: 0 })));
 
   useEffect(() => {
+    const reduceMotion = prefersReducedMotion();
     const clamp = (v) => Math.max(-1, Math.min(1, v));
     const vw = () => window.innerWidth;
     const vh = () => window.innerHeight;
@@ -60,7 +64,8 @@ function AvatarEyes() {
     };
 
     const tick = (now) => {
-      if (now - lastPointer > 2500 && now - lastTilt > 1500 && now > nextWander) {
+      // Idle wander is skipped when the visitor prefers reduced motion; the eyes still follow the pointer.
+      if (!reduceMotion && now - lastPointer > 2500 && now - lastTilt > 1500 && now > nextWander) {
         target.x = vw() * (0.15 + Math.random() * 0.7);
         target.y = vh() * (0.15 + Math.random() * 0.6);
         nextWander = now + 1200 + Math.random() * 1800;
@@ -89,7 +94,9 @@ function AvatarEyes() {
           return { x: nx * maxX, y: ny * maxY };
         })
       );
-      setLook({ x: clamp((cur.x / vw()) * 2 - 1), y: clamp((cur.y / vh()) * 2 - 1) });
+      if (!reduceMotion) {
+        setLook({ x: clamp((cur.x / vw()) * 2 - 1), y: clamp((cur.y / vh()) * 2 - 1) });
+      }
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
@@ -120,16 +127,24 @@ function AvatarEyes() {
           transform: `translate3d(${look.x * 14}px, ${look.y * 8}px, 0) rotateY(${look.x * 5}deg) rotateX(${-look.y * 3}deg)`,
         }}
       >
-        <img
-          src={asset(site.avatar)}
-          alt={footerName}
-          className="avatar-img"
-          draggable={false}
-        />
+        <picture>
+          {site.avatarWebp && <source srcSet={asset(site.avatarWebp)} type="image/webp" />}
+          <img
+            src={asset(site.avatar)}
+            alt={`Illustrated portrait of ${footerName}`}
+            className="avatar-img"
+            width={site.avatarWidth}
+            height={site.avatarHeight}
+            fetchPriority="high"
+            decoding="async"
+            draggable={false}
+          />
+        </picture>
         {EYES.map((eye, i) => (
           <div
             key={eye.id}
             className="eye"
+            aria-hidden="true"
             ref={(el) => {
               eyeRefs.current[i] = el;
             }}
@@ -164,10 +179,11 @@ function AvatarEyes() {
 /** Adds `in` class when element scrolls into view (once). */
 function Reveal({ as: Tag = "div", className = "", delay = 0, children, ...rest }) {
   const ref = useRef(null);
-  const [seen, setSeen] = useState(false);
+  // Without IntersectionObserver (very old browsers, some crawlers) content must still be visible.
+  const [seen, setSeen] = useState(() => typeof IntersectionObserver === "undefined");
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || typeof IntersectionObserver === "undefined") return;
     const io = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -192,8 +208,8 @@ function Reveal({ as: Tag = "div", className = "", delay = 0, children, ...rest 
   );
 }
 
-/** Animated number that counts up when visible / when `trigger` changes. */
-function CountUp({ value, prefix = "", suffix = "", duration = 900, trigger }) {
+/** Animated number that counts up from 0 when it scrolls into view. Remount (change `key`) to replay. */
+function CountUp({ value, prefix = "", suffix = "", duration = 900 }) {
   const [n, setN] = useState(0);
   const ref = useRef(null);
   useEffect(() => {
@@ -210,8 +226,10 @@ function CountUp({ value, prefix = "", suffix = "", duration = 900, trigger }) {
       };
       raf = requestAnimationFrame(step);
     };
-    setN(0);
-    start = 0;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      run();
+      return () => cancelAnimationFrame(raf);
+    }
     const io = new IntersectionObserver(
       ([e]) => {
         if (e.isIntersecting) {
@@ -221,12 +239,12 @@ function CountUp({ value, prefix = "", suffix = "", duration = 900, trigger }) {
       },
       { threshold: 0.4 }
     );
-    if (el) io.observe(el);
+    io.observe(el);
     return () => {
       io.disconnect();
       cancelAnimationFrame(raf);
     };
-  }, [value, duration, trigger]);
+  }, [value, duration]);
   return (
     <span ref={ref} className="count">
       {prefix}
@@ -276,23 +294,33 @@ function SpotCard({ className = "", children, tilt = 6, ...rest }) {
 function Experience() {
   const [active, setActive] = useState(0);
   const [openIdx, setOpenIdx] = useState(0);
+  const sectionRef = useRef(null);
   const job = experience[active];
 
-  // keyboard: ← → to switch roles
+  const selectJob = (i) => {
+    setActive(i);
+    setOpenIdx(0);
+  };
+
+  // keyboard: ← → switch roles, but only while this section is on screen and no field is focused
   useEffect(() => {
     const onKey = (e) => {
-      if (e.key === "ArrowRight") setActive((a) => (a + 1) % experience.length);
-      if (e.key === "ArrowLeft")
-        setActive((a) => (a - 1 + experience.length) % experience.length);
+      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      if (e.altKey || e.ctrlKey || e.metaKey) return;
+      const tag = e.target?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      const r = sectionRef.current?.getBoundingClientRect();
+      if (!r || r.bottom < 0 || r.top > window.innerHeight) return;
+      const dir = e.key === "ArrowRight" ? 1 : -1;
+      setActive((a) => (a + dir + experience.length) % experience.length);
+      setOpenIdx(0);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  useEffect(() => setOpenIdx(0), [active]);
-
   return (
-    <section className="section xp" id="work">
+    <section className="section xp" id="work" ref={sectionRef}>
       <Reveal className="section-head">
         <p className="kicker">Career journey</p>
         <h2>Experience</h2>
@@ -301,28 +329,31 @@ function Experience() {
 
       <div className="xp-grid">
         {/* Timeline rail */}
-        <Reveal as="ol" className="rail" delay={80}>
-          {experience.map((j, i) => (
-            <li key={j.key}>
-              <button
-                type="button"
-                className={`stop ${i === active ? "is-active" : ""} ${i < active ? "is-past" : ""}`}
-                onClick={() => setActive(i)}
-                aria-pressed={i === active}
-              >
-                <span className="dot">
-                  <span className="dot-core" />
-                </span>
-                <span className="stop-body">
-                  <span className="stop-years">{j.years}</span>
-                  <span className="stop-org">{j.short}</span>
-                  <span className="stop-role">{j.role.split("|")[0].trim()}</span>
-                </span>
-              </button>
-            </li>
-          ))}
+        <Reveal className="rail" delay={80}>
+          <ol className="rail-list" aria-label="Roles">
+            {experience.map((j, i) => (
+              <li key={j.key}>
+                <button
+                  type="button"
+                  className={`stop ${i === active ? "is-active" : ""} ${i < active ? "is-past" : ""}`}
+                  onClick={() => selectJob(i)}
+                  aria-pressed={i === active}
+                >
+                  <span className="dot">
+                    <span className="dot-core" />
+                  </span>
+                  <span className="stop-body">
+                    <span className="stop-years">{j.years}</span>
+                    <span className="stop-org">{j.short}</span>
+                    <span className="stop-role">{j.role.split("|")[0].trim()}</span>
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ol>
           <span
             className="rail-progress"
+            aria-hidden="true"
             style={{ "--p": active / (experience.length - 1) }}
           />
         </Reveal>
@@ -340,18 +371,13 @@ function Experience() {
             <div className="metrics">
               {job.metrics.map((m, i) => (
                 <div className="metric" key={m.label} style={{ "--i": i }}>
-                  <CountUp
-                    value={m.value}
-                    prefix={m.prefix || ""}
-                    suffix={m.suffix}
-                    trigger={job.key}
-                  />
+                  <CountUp value={m.value} prefix={m.prefix || ""} suffix={m.suffix || ""} />
                   <span className="metric-label">{m.label}</span>
                 </div>
               ))}
             </div>
 
-            <ul className="tags">
+            <ul className="tags" aria-label="Tools used">
               {job.tags.map((t, i) => (
                 <li key={t} style={{ "--i": i }}>
                   {t}
@@ -407,9 +433,13 @@ export default function App() {
 
   return (
     <div className="site">
+      <a className="skip-link" href="#work">
+        Skip to content
+      </a>
       <header className="nav">
-        <nav className="nav-pill">
+        <nav className="nav-pill" aria-label="Sections">
           <a href="#work">Work</a>
+          <a href="#skills">Skills</a>
           <a href="#about">About</a>
           <a href="#contact">Contact</a>
         </nav>
@@ -421,6 +451,7 @@ export default function App() {
           <div className="hero-copy">
             <p className="hi">{hero.greeting}</p>
             <h1>{hero.name}</h1>
+            {hero.title && <p className="hero-title">{hero.title}</p>}
             <p className="lede">{hero.headline}</p>
             <div className="cta-row">
               <a className="btn primary" href={asset(site.resumePdf)} download>
@@ -435,7 +466,7 @@ export default function App() {
         </section>
 
         {/* stats strip under hero */}
-        <Reveal as="section" className="stats-strip">
+        <Reveal as="section" className="stats-strip" aria-label="Highlights">
           {stats.map((s, i) => (
             <div key={s.label} className="stat" style={{ "--i": i }}>
               <CountUp value={s.value} prefix={s.prefix || ""} suffix={s.suffix || ""} duration={1100} />
@@ -527,9 +558,14 @@ export default function App() {
 
       <footer className="footer">
         <span>© {new Date().getFullYear()} {footerName}</span>
-        <a href={asset(site.resumePdf)} download>
-          Download PDF resume
-        </a>
+        <div className="footer-links">
+          <a href={contact.linkedin} target="_blank" rel="noreferrer">
+            LinkedIn
+          </a>
+          <a href={asset(site.resumePdf)} download>
+            Download PDF resume
+          </a>
+        </div>
       </footer>
     </div>
   );
